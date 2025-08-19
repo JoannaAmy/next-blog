@@ -1,19 +1,174 @@
 "use server";
+
 import { revalidatePath } from "next/cache";
 import prisma from "./db";
+import bcrypt from "bcryptjs";
+import { auth, signIn as authSignIn, signOut } from "@/auth";
+
+export type SignUpResult = {
+  success: boolean;
+  error?: string;
+  message?: string;
+};
+
+export async function signUpAction(formData: FormData): Promise<SignUpResult> {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const name = formData.get("name") as string;
+
+  if (!email || !password || !name) {
+    return {
+      success: false,
+      error: "All inputs are required",
+    };
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return {
+      success: false,
+      error: "invalid email",
+    };
+  }
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[.,!?@#$%^&*()\-_=+{}[\]|\\:;'\"<>?,./~`]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return {
+      success: false,
+      error:
+        "Password must be at least 8 characters long and include uppercase, lowercase and numbers and contain st least one special character",
+    };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return {
+        success: false,
+        error: "Email is already in use",
+      };
+    }
+
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Signup successful!",
+    };
+  } catch (error) {
+    console.error("Error during signup", error);
+    return {
+      success: false,
+      error: "An unexpected error occured",
+    };
+  }
+}
+
+export async function signInWithGoogleAction(redirectTo: string = "/") {
+  await authSignIn("google", { redirectTo });
+}
+
+export async function signInAction(formData: FormData): Promise<SignUpResult> {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    return {
+      success: false,
+      error: "Emails and password are required",
+    };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return { success: false, error: "No User found with this email" };
+    }
+    if (!user.password) {
+      return {
+        success: false,
+        error: "This account doesn't support password login",
+      };
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return { success: false, error: "Invalid Password" };
+    }
+
+
+    const signInResult = await authSignIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (signInResult?.error) {
+      return {
+        success: false,
+        error: String(signInResult.error),
+      };
+    }
+
+    return {
+      success: true,
+      message: "Login successful!",
+    };
+  } catch (error) {
+    console.error("Unexpected error during login", error);
+    return {
+      success: false,
+      error: "An unexpected error occured",
+    };
+  }
+}
+
+export async function signOutAction() {
+  try {
+    await signOut();
+    return {
+      success: true,
+      message: "Logout successful!",
+    };
+  } catch (error) {
+    console.error("Error during logout", error);
+    throw new Error("An unexpected error occurred");
+  }
+}
 
 export async function createComment(formData: FormData) {
-  const name = formData.get("name") as string;
-  // console.log(name);
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user || !user.id || !user.name) {
+    return;
+  }
   const message = formData.get("message") as string;
   const postId = formData.get("postId") as string;
-  
+
   try {
     await prisma.comment.create({
       data: {
-        name,
+        name: user.name,
         message,
         postId: parseInt(postId),
+        userId: user.id,
       },
     });
     revalidatePath(`/posts/${postId}`);

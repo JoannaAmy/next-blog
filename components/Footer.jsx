@@ -7,7 +7,7 @@ const Footer = () => {
           <a
             href="https://www.linkedin.com/in/egbunajoannaamarachi"
             target="_blank"
-            className="hover:text-blue-500"
+            className="hover:text-blue-500 cursor-pointer"
             rel="noopener noreferrer"
           >
             Contact me

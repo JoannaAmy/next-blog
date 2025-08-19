@@ -9,7 +9,7 @@ export default async function Page({ params }) {
   const res = await fetch(`https://dummyjson.com/posts/${postId}`);
   const post = await res.json();
 
-  if(!post || !post.id){
+  if (!post || !post.id) {
     notFound();
   }
   const comments = await prisma.comment.findMany({
@@ -31,23 +31,29 @@ export default async function Page({ params }) {
             {post.body}
           </p>
         </div>
-        
-        <div className="mt-30 ">
+
+        <div className="mt-30">
           <CommentForm postId={postId} />
         </div>
-        <div className="space-y-4 bg-white p-8 rounded-lg shadow-lg mt-20">
-          <h2 className="mt-10 text-[18px] text-gray-800 text-left mb-6 ">
+        <div className="space-y-4 bg-white p-8 rounded-lg shadow-lg mt-6">
+          <h2 className="mt-5 text-[20px] text-gray-800 font-bold mb-6 text-left">
             Comments
           </h2>
-          {comments.length > 0 ? (
-            comments.map((comment) => (
-              <CommentCard key={comment.id} comment={comment} postId={postId} />
-            ))
-          ) : (
-            <p className="text-center text-gray-500">
-              No comments yet. Be the first to leave one!
-            </p>
-          )}
+          <div className="divide-y divide-gray-200 mt-5">
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <CommentCard
+                  key={comment.id}
+                  comment={comment}
+                  postId={postId}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-500">
+                No comments yet. Be the first to leave one!
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </main>

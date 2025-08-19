@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Header from "../components/Header"
-import Footer from "../components/Footer"
-import Container from "../components/Container"
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Container from "../components/Container";
 import "./globals.css";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,14 +20,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} text-stone-700 bg-zinc-200 `}
-      >
-      <Container>
-          <Header />
-        {children}
-        <Footer />
-      </Container>
+      <body className={`${inter.className} text-stone-700 bg-zinc-200 `}>
+        <SessionProvider>
+          <Container>
+            <Header />
+            {children}
+            <Footer />
+          </Container>
+        </SessionProvider>
       </body>
     </html>
   );

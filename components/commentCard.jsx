@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { editComment, deleteComment } from "../lib/actions";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
 const CommentCard = ({ comment, postId }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -46,42 +47,35 @@ const CommentCard = ({ comment, postId }) => {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-md text-sm mt-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 cursor-pointer rounded-md text-sm mt-2"
           >
-             {isPending ? "Saving..." : "Save"}
+            {isPending ? "Saving..." : "Save"}
           </button>
           <button
             type="button"
             onClick={handleCancel}
-            className="ml-2 bg-gray-400 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-md text-sm"
+            className="ml-2 bg-gray-400 hover:bg-gray-500 text-white font-bold py-1 px-3 rounded-md text-sm cursor-pointer" 
           >
             Cancel
           </button>
         </form>
       ) : (
-        // <div className="bg-white p-6 rounded-lg shadow-md mb-4">
-        //   <p className="text-lg font-semibold text-gray-800">{comment.name}</p>
-        //   <p className="text-gray-600 mt-2">{comment.message}</p>
-        // </div>
-
-        <div className="flex justify-between items-center mt-2">
-          <p className="text-lg font-semibold text-gray-800">{comment.name}</p>
-          <p className="text-gray-600">{comment.message}</p>
+        <div className="flex justify-between items-baseline pt-15 pb-5 mt-2">
+          <p className="text-[17px]  text-gray-800  w-35">
+            {comment.name}
+          </p>
+          <p className="text-gray-600 text-wrap w-100">{comment.message}</p>
           <div>
-            <button
-              onClick={handleEdit}
-              className="text-blue-500 hover:underline text-sm"
-            >
-              Edit
+            <button onClick={handleEdit}>
+              <FaEdit className="text-blue-500 text-[16px] cursor-pointer hover:text-blue-700 mr-2" />
             </button>
+
             <form action={deleteComment} className="inline-block ml-2">
               <input type="hidden" name="commentId" value={comment.id} />
               <input type="hidden" name="postId" value={postId} />
-              <button
-                type="submit"
-                className="text-red-500 hover:underline text-sm"
-              >
-                Delete
+
+              <button type="submit">
+                <FaTrashAlt className="text-red-500 text-[16px] cursor-pointer hover:text-red-700" />{" "}
               </button>
             </form>
           </div>
