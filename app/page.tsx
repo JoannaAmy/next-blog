@@ -30,7 +30,7 @@ export default function Home() {
         inspires you to create.
       </p>
 
-      <button className="w-[75] bg-blue-600  hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-md transition-colors duration-300 mt-20 cursor-pointer">
+      <button className="w-[90] bg-blue-600  hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-md transition-colors duration-300 mt-15 cursor-pointer">
         <Link href="/posts">Explore Posts</Link>
       </button>
     </div>

@@ -119,7 +119,7 @@ export default function SignUpPage() {
           )}
         </button>
       </div>
-      <p>Have an account already? <Link href="/login" className="text-blue-600 hover:text-blue-700 underline cursor-pointer">Login</Link></p>
+      <p className="mt-2">Have an account already? <Link href="/login" className="text-blue-600 hover:text-blue-700 underline cursor-pointer">Login</Link></p>
     </div>
   );
 }
