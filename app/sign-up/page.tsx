@@ -113,13 +113,26 @@ export default function SignUpPage() {
           className="w-full bg-gray-600 hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-md transition-colors duration-300 mt-2.5 cursor-pointer "
         >
           {googleLoading ? (
-            <FaSpinner className="animate-spin" />
+            <>
+              <span>
+                Signing Up with Google
+                <FaSpinner className="animate-spin" />{" "}
+              </span>
+            </>
           ) : (
             "Continue with Google"
           )}
         </button>
       </div>
-      <p className="mt-2">Have an account already? <Link href="/login" className="text-blue-600 hover:text-blue-700 underline cursor-pointer">Login</Link></p>
+      <p className="mt-2">
+        Have an account already?{" "}
+        <Link
+          href="/login"
+          className="text-blue-600 hover:text-blue-700 underline cursor-pointer"
+        >
+          Login
+        </Link>
+      </p>
     </div>
   );
 }
